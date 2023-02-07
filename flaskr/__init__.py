@@ -65,8 +65,14 @@ def create_app(test_config=None):
             app.logger.warn(request.json)
             return app.response_class(status=200)
 
-
+        app.logger.warn(f"TYPE DEL JSON QUE NO VIENE DE CVAT: {type(request.json)}")
         app.logger.warn(f"JSON QUE NO VIENE DE CVAT: {request.json}")
+
+        app.logger(f"STATUS DEL JOB: {request.json['job']['state']}")
+        if(request.json['job']['state'] == 'completed'):
+            app.logger.warn("EL JOB ESTA COMPLETED")
+
+        
         return "NO VIENE DE CVAT, CLAVES INCORRECTAS"
 
     return app
