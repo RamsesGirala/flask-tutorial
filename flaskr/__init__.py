@@ -1,6 +1,7 @@
 import os
+import logging
 
-from flask import Flask
+from flask import Flask,request
 from . import db
 from . import auth
 from . import blog
@@ -33,6 +34,10 @@ def create_app(test_config=None):
     app.register_blueprint(blog.bp)
     app.add_url_rule('/', endpoint='index')
 
+    #add logger
+    app.logger = logging.getLogger('my_logger')
+
+
     # a simple page that says hello
     @app.route('/hola')
     def hello():
@@ -40,7 +45,9 @@ def create_app(test_config=None):
 
     @app.route('/recieveJobUpdate', methods=["POST"])
     def recieveJobUpdate():
-        
+        app.logger.warn("--------------EJECUTANDO RECIEVE JOB UPDATE--------------")
+        app.logger.warn(request.headers.get('Content-Type'))
+        app.logger.warn(request.json)
         return "llego"
 
     return app
