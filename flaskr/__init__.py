@@ -50,7 +50,7 @@ def create_app(test_config=None):
         if request.headers.get('X-Signature-256') == None:
             return "NO VIENE DE CVAT, NO VIENE LA CLAVE"
 
-        print(f"LA QUE LLEGA: {request.headers.get('X-Signature-256')}")
+        app.logger.warn(f"LA QUE LLEGA: {request.headers.get('X-Signature-256')}")
 
         app.logger.warn("--------------EJECUTANDO RECIEVE JOB UPDATE--------------")
         
@@ -59,7 +59,7 @@ def create_app(test_config=None):
             + hmac.new("secretforcvat".encode("utf-8"), request.data, digestmod=sha256).hexdigest()
         )
 
-        print(f"LA QUE SE ESPERA: {signature}")
+        app.logger.warn(f"LA QUE SE ESPERA: {signature}")
 
         if hmac.compare_digest(request.headers["X-Signature-256"], signature):
             app.logger.warn(request.json)
