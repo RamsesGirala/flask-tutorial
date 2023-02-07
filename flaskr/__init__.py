@@ -2,6 +2,8 @@ import os
 import logging
 
 from flask import Flask,request
+import hmac
+from hashlib import sha256
 from . import db
 from . import auth
 from . import blog
@@ -45,9 +47,20 @@ def create_app(test_config=None):
 
     @app.route('/recieveJobUpdate', methods=["POST"])
     def recieveJobUpdate():
+        if request.headers.get('X-Signature-256') == None:
+            raise app.response_class(status=500, response="Signatures didn't match!")
+
         app.logger.warn("--------------EJECUTANDO RECIEVE JOB UPDATE--------------")
-        app.logger.warn(request.headers.get('Content-Type'))
-        app.logger.warn(request.json)
-        return "llego"
+        
+        signature = (
+            "sha256="
+            + hmac.new("secretforcvat".encode("utf-8"), request.data, digestmod=sha256).hexdigest()
+        )
+
+        if hmac.compare_digest(request.headers["X-Signature-256"], signature):
+            print(request.json)
+            return app.response_class(status=200)
+
+        raise app.response_class(status=500, response="Signatures didn't match!")
 
     return app
