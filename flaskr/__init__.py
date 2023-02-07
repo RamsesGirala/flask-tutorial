@@ -47,13 +47,13 @@ def create_app(test_config=None):
 
     @app.route('/recieveJobUpdate', methods=["POST"])
     def recieveJobUpdate():
+        app.logger.warn("--------------EJECUTANDO RECIEVE JOB UPDATE--------------")
+        
         if request.headers.get('X-Signature-256') == None:
             return "NO VIENE DE CVAT, NO VIENE LA CLAVE"
 
         app.logger.warn(f"LA QUE LLEGA: {request.headers.get('X-Signature-256')}")
 
-        app.logger.warn("--------------EJECUTANDO RECIEVE JOB UPDATE--------------")
-        
         signature = (
             "sha256="
             + hmac.new("secretforcvat".encode("utf-8"), request.data, digestmod=sha256).hexdigest()
@@ -65,6 +65,8 @@ def create_app(test_config=None):
             app.logger.warn(request.json)
             return app.response_class(status=200)
 
+
+        app.logger.warn(f"JSON QUE NO VIENE DE CVAT: {request.json}")
         return "NO VIENE DE CVAT, CLAVES INCORRECTAS"
 
     return app
